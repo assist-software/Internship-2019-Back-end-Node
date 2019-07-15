@@ -42,7 +42,7 @@ route.post('/signin',function(req,res,next){
            res.status(409).send(info.message)
         }
         else{
-            res.status(201).send(info.message)
+            res.status(201).send(info)
         }}
     })(req,res,next)
 })

@@ -1,7 +1,10 @@
 const Sequelize = require('sequelize');
 const Model=Sequelize.Model
-const model=require("./role")
+const modelRole=require("./role")
 const bcrypt=require("bcrypt")
+//const role=require('')
+
+
 const sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
     host: 'localhost',
     dialect: 'postgres'
@@ -42,9 +45,10 @@ const user = sequelize.define('user', {
         }
     
     }*/
-})
 
-user.hasOne(model,{foreignKey: 'id'})
+},{freezeTableName: true,})
+
+//
 
 function isEmptyObject(obj) {
     return !Object.keys(obj).length;
@@ -71,11 +75,12 @@ user.beforeCreate((user) => {
         
 });
 
-//user.comparePass
-
-sequelize.sync().then(() =>{ 
-    return  user.findAll()
-        .then(users=>{ console.log(typeof(users))
+function isEmptyObject(obj) {
+    return !Object.keys(obj).length;
+  }
+  sequelize.sync().then(() =>{ 
+      user.findAll()
+        .then((users)=>{ console.log(typeof(users))
             if(isEmptyObject(users)){
                 console.log("Database is empty and we need to create a default user")
                 user.create({name: 'Admin', email: 'admin@yahoo.com',passwordHash: 'admin'})
@@ -83,5 +88,20 @@ sequelize.sync().then(() =>{
                 
         }
     })
-})
+}
+ )
+
+ modelRole.findAll()
+      .then((users)=>{ 
+        user.findAll()
+                 .then((use)=>{
+                  if(!isEmptyObject(use))
+                  user.hasOne(modelRole,{foreignKey: 'id'})
+                 })
+                 } )
+
+//user.comparePass
+
+
+//*/)
 module.exports=user

@@ -6,8 +6,10 @@ const app=express()
 const port=3000
 const pass=require('./authentication/authentication');
 const Sequelize = require('sequelize');
+
 const modelRole=require("./models/role")
 const modelUser=require("./models/user")
+
 
 const sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
     host: 'localhost',
@@ -31,7 +33,7 @@ app.use(passport.session())
 
 
 
-
+//modelRole.belongsTo(modelUser,{foreignKey: 'id'})
 app.use("/",routes)
 
 
