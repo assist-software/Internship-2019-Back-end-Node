@@ -5,25 +5,10 @@ var routes=require('./routes/routes')
 const app=express()
 const port=3000
 const pass=require('./authentication/authentication');
-const Sequelize = require('sequelize');
-
 const modelRole=require("./models/role")
 const modelUser=require("./models/user")
+const db=require("./db")
 
-
-const sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
-    host: 'localhost',
-    dialect: 'postgres'
-  });
-
-  sequelize
-  .authenticate()
-  .then(() => {
-    console.log('Connection has been established successfully.');
-  })
-  .catch(err => {
-    console.error('Unable to connect to the database:', err);
-  });
 
 
 app.use(bodyParser.json())
@@ -33,8 +18,13 @@ app.use(passport.session())
 
 
 
-//modelRole.belongsTo(modelUser,{foreignKey: 'id'})
+
 app.use("/",routes)
 
-
-app.listen(port,()=>console.log(`The app is listen on port ${port}`))
+db.sync().then(
+  async ()=>{
+    await modelRole.insertDefaultRoles()
+    await modelUser.insertDefaultUser()
+    app.listen(port,()=>console.log(`The app is listen on port ${port}`))
+  }
+)

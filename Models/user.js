@@ -1,16 +1,10 @@
 const Sequelize = require('sequelize');
 const Model=Sequelize.Model
-const modelRole=require("./role")
+const model=require("./role")
 const bcrypt=require("bcrypt")
-//const role=require('')
+const db=require("../db")
 
-
-const sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
-    host: 'localhost',
-    dialect: 'postgres'
-  });
-
-const user = sequelize.define('user', {
+const user = db.define('user', {
     // attributes
     id:{
         type: Sequelize.INTEGER,
@@ -45,10 +39,9 @@ const user = sequelize.define('user', {
         }
     
     }*/
+})
 
-},{freezeTableName: true,})
 
-//
 
 function isEmptyObject(obj) {
     return !Object.keys(obj).length;
@@ -75,33 +68,29 @@ user.beforeCreate((user) => {
         
 });
 
-function isEmptyObject(obj) {
-    return !Object.keys(obj).length;
-  }
-  sequelize.sync().then(() =>{ 
-      user.findAll()
-        .then((users)=>{ console.log(typeof(users))
-            if(isEmptyObject(users)){
-                console.log("Database is empty and we need to create a default user")
-                user.create({name: 'Admin', email: 'admin@yahoo.com',passwordHash: 'admin'})
-                    .then(()=>console.log("Admin created successfully"))
-                
-        }
-    })
-}
- )
-
- modelRole.findAll()
-      .then((users)=>{ 
-        user.findAll()
-                 .then((use)=>{
-                  if(!isEmptyObject(use))
-                  user.hasOne(modelRole,{foreignKey: 'id'})
-                 })
-                 } )
-
 //user.comparePass
 
+// sequelize.sync().then(() =>{ 
+//     return  user.findAll()
+//         .then(users=>{ console.log(typeof(users))
+//             if(isEmptyObject(users)){
+//                 console.log("Database is empty and we need to create a default user")
+//                 user.create({name: 'Admin', email: 'admin@yahoo.com',passwordHash: 'admin'})
+//                     .then(()=>console.log("Admin created successfully"))
+                
+//         }
+//     })
+// })
 
-//*/)
+// user.hasOne(model,{foreignKey: 'id'})
+
+user.insertDefaultUser=async () =>{ 
+    const allusers=await user.findAll()
+    if(allusers.length==0)
+      {
+              await user.create({name: 'Admin', email: 'admin@yahoo.com',passwordHash: 'admin'})
+              console.log("Database is empty and we need to create a default user")
+      }
+    }
+
 module.exports=user

@@ -1,13 +1,9 @@
 const Sequelize = require('sequelize');
 const Model=Sequelize.Model
-const modelUser=require("./user")
+const db=require("../db")
 
-const sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
-    host: 'localhost',
-    dialect: 'postgres'
-  });
 
-const role = sequelize.define('role', {
+const role = db.define('role', {
     // attributes
     id:{
         type: Sequelize.INTEGER,
@@ -33,25 +29,17 @@ const role = sequelize.define('role', {
 })
 
 function isEmptyObject(obj) {
-  return !Object.keys(obj).length;
-}
-
-
-
-sequelize.sync().then(() =>{
-  role.findAll()
-      .then((user)=>{ console.log(typeof(user))
-          if(isEmptyObject(user)){
-              console.log("Database is empty and we need to create 2 roles")
-              role.create({name: 'Admin', isAdmin: true})
-                  .then(()=>console.log("Admin created successfully"))
-              role.create({name: 'User', isAdmin: false})
-                  .then(()=>console.log("User created successfully"))
+    return !Object.keys(obj).length;
+  }
+role.insertDefaultRoles=async () =>{ 
+  const allroles=await role.findAll()
+      if(allroles.length==0)
+      {
+              console.log("-----------Database is empty and we need to create 2 roles")
+              await role.create({name: 'Admin', isAdmin: true})
+              console.log("------------------Admin created successfully")
+              await role.create({name: 'User', isAdmin: false})
+              console.log("-------------------User created successfully")
       }
-  })
-})
-
-
-
-
+}
 module.exports=role

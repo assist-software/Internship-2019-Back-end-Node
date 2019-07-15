@@ -11,7 +11,7 @@ passport.serializeUser(function(user, done) {
     done(null, user.id);
   });
   const Sequelize = require('sequelize');
-  const sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
+  const sequelize = new Sequelize('WatchNext', 'postgres', 'teamY', {
     host: 'localhost',
     dialect: 'postgres'
   });
