@@ -1,23 +1,49 @@
-  const Sequelize = require('sequelize');
-  const Model = Sequelize.Model;
+const Sequelize = require('sequelize');
+const Model=Sequelize.Model
 
-  const sequelize = new Sequelize('WatchNext', 'postgres', 'teamY', {
+const sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
     host: 'localhost',
-    dialect: 'postgres',
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
-    },
+    dialect: 'postgres'
   });
 
-  class Role extends Model {}
-Role.init({
-  id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
-  name: { type: Sequelize.STRING, allowNull: false, validate: { is: ["^[a-z]+$",'i'], notNull: true, notEmpty: true } },
-  isAdmin: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false }
-},
-   { sequelize, modelName: 'role',timestamps: false });
+const role = sequelize.define('role', {
+    // attributes
+    id:{
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey:true
+    },
+    name: {
+      type: Sequelize.STRING,
+      require: true,
+      unique: true,
+      validate:{
+        
+        is: ["^[a-z]+$",'i'],
+        
+      }
+    },
+    isAdmin: {
+      type: Sequelize.BOOLEAN,
+      default: false,
+      require: true
+      // allowNull defaults to true
+    }
+})
 
-module.exports=Role;
+function isEmptyObject(obj) {
+    return !Object.keys(obj).length;
+  }
+sequelize.sync().then(() =>{ 
+    return  role.findAll()
+        .then(users=>{ console.log(typeof(users))
+            if(isEmptyObject(users)){
+                console.log("Database is empty and we need to create 2 roles")
+                role.create({name: 'Admin', isAdmin: true})
+                    .then(()=>console.log("Admin created successfully"))
+                role.create({name: 'User', isAdmin: false})
+                    .then(()=>console.log("User created successfully"))
+        }
+    })
+})
+module.exports=role
