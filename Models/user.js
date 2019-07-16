@@ -3,6 +3,7 @@ const Model=Sequelize.Model
 const model=require("./role")
 const bcrypt=require("bcrypt")
 const db=require("../db")
+const modelRole=require("../models/role")
 
 const user = db.define('user', {
     // attributes
@@ -88,9 +89,9 @@ user.insertDefaultUser=async () =>{
     const allusers=await user.findAll()
     if(allusers.length==0)
       {
-              await user.create({name: 'Admin', email: 'admin@yahoo.com',passwordHash: 'admin'})
+              await user.create({name: 'Admin', email: 'admin@yahoo.com',passwordHash: 'admin',roleId: 1})
               console.log("Database is empty and we need to create a default user")
       }
     }
-
+//modelRole.belongsTo(user,{foreignKey: 'userId'})
 module.exports=user

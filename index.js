@@ -20,10 +20,11 @@ app.use(cors())
 app.use("/",routes)
 app.use("/api",passport.authenticate("jwt",{session:false}),protectedRoutes)
 
+modelUser.belongsTo(modelRole, {foreignKey: 'roleId'})
 db.sync().then(
-  async ()=>{
-    await modelRole.insertDefaultRoles()
-    await modelUser.insertDefaultUser()
+     async()=>{ 
+     await modelRole.insertDefaultRoles()
+     await modelUser.insertDefaultUser()
     app.listen(port,()=>console.log(`The app is listen on port ${port}`))
-  }
+     }
 )

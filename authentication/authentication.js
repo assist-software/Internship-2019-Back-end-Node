@@ -19,12 +19,13 @@ passport.use('signup',new localStrategy({
     passwordField: 'password',
     passReqToCallback: true
 },function(req, email, password, done) {
-    var username=req.body.email
+    var email=req.body.email
     var password1=req.body.password
     var confPassword1=req.body.confPassword
+    var username=req.body.username
     
     
-    if(!username || !password || !confPassword1){
+    if(!email || !username || !password || !confPassword1){
       return done(null,false,{message: "All the field must be filled"})
     }
     else
@@ -44,7 +45,7 @@ passport.use('signup',new localStrategy({
                             else
                             {
                                 console.log(username,password1,confPassword1,"Aici esti")
-                                modelUser.create({'name':req.body.username, 'email': req.body.email ,'passwordHash':req.body.password})
+                                modelUser.create({'name':req.body.username, 'email': req.body.email ,'passwordHash':req.body.password,'roleId': 2})
                                     .then((user)=>{return done(null,user.email,{message: "User created successfully"})})
                                     .catch((error) => {return done(error,false,{message: "Error somewere"})})
                             }
@@ -72,7 +73,8 @@ passport.use('signup',new localStrategy({
                           var pay=users.toJSON()
                           var user_payload={
                             username: pay.name,
-                            email: pay.email
+                            email: pay.email,
+                            role: pay.roleId
                           }
                           var token=jwt.sign(user_payload,"Mysecretcode",{algorithm: 'HS256',expiresIn: '2h'})
                           jwt.verify(token,"Mysecretcode",(err,good)=>{
@@ -108,7 +110,7 @@ passport.use('signup',new localStrategy({
             modelUser.findOne({where:{email: jwt_payload.email}})
                      .then((users)=>{
                           if(users){
-
+                              console.log(users)
                               var info_token={
                               name: users.name,
                               email: users.email

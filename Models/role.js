@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const Model=Sequelize.Model
 const db=require("../db")
+const modelUser=require("../models/user")
 
 
 const role = db.define('role', {
@@ -8,7 +9,7 @@ const role = db.define('role', {
     id:{
         type: Sequelize.INTEGER,
         autoIncrement: true,
-        primaryKey:true
+        primaryKey: true
     },
     name: {
       type: Sequelize.STRING,
@@ -39,4 +40,7 @@ role.insertDefaultRoles=async () =>{
               console.log("-------------------User created successfully")
       }
 }
+
+//role.hasOne(modelUser,{foreignKey: 'userId',})
+//role.belongsTo(modelUser, { foreignKey: 'userId' })
 module.exports=role
