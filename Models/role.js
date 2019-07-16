@@ -28,9 +28,6 @@ const role = db.define('role', {
     }
 })
 
-function isEmptyObject(obj) {
-    return !Object.keys(obj).length;
-  }
 role.insertDefaultRoles=async () =>{ 
   const allroles=await role.findAll()
       if(allroles.length==0)

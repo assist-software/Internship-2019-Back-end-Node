@@ -86,4 +86,22 @@ route.post('/reset-password',function(req,res){
 
 })
 
+ route.post('/profile',(req,res,next)=>{ 
+   passport.authenticate("jwt",{session: false},(err,user,info)=>{
+
+     console.log(err,user,info)
+     if(err){
+         res.status(409).send("There is a problem")
+     }
+     else{ 
+     if(user === false){
+        res.status(409).send(info.message)
+     }
+     else
+     {
+         res.status(201).send(user)
+     }}
+   })(req,res,next)
+ })
+
 module.exports=route
