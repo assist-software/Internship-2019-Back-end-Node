@@ -171,4 +171,51 @@ route.post("/movie",async(req,res)=>{
                 .catch((err)=> console.log("There is a problem with the server"))
  })
 
+ route.post('/category',function(req,res){ 
+  var categoryName=req.body.name
+  modelCategory.findOne({where: {'name': req.body.name}})
+                    .then((category)=>{
+                          console.log(category)
+                          if(category!==null)
+                              {
+                              //console.log("Category --" +category.name+"-- has already been introduced in the database on id "+category.id)
+                              res.status(200).send("Category --" +category.name+"-- has already been introduced in the database on id "+category.id)
+                              }
+                          else
+                          {
+                            modelCategory.create({'name':req.body.name})
+                                  .then((category)=>{res.status(200).send("Category --"+category.name+"-- succesfully introduced in the database. ID:"  +category.id)})
+                                  .catch((error) => {res.status(200).send("Some error")})
+                          }
+                      })
+  })
+
+route.get('/category/:id',(req,res)=>{
+   var categoryId=req.params.id
+   modelCategory.findOne({where: {'id': categoryId}})
+   .then((category)=>{
+       //console.log(category)
+       if(category!==null){
+         //console.log(category)
+         res.status(200).send("Category: --"+category.name+"-- found")
+        }
+        else{
+         res.status(404).send("Category not found")
+        }
+     })
+})
+
+route.get('/categories',(req,res)=>{
+  modelCategory.findAndCountAll({attributes: ['id','name']}).then(categories => {
+    if(categories!==null){
+        //console.log(categories.count) //-1 for the correct number
+        //console.log(categories.rows)
+      res.status(200).send(categories.rows)
+    }
+    else{
+        res.status(404).send("Categories not found")
+    }
+  })
+})
+
 module.exports=route
