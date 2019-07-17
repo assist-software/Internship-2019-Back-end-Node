@@ -1,7 +1,8 @@
 const Sequelize = require('sequelize');
 const Model=Sequelize.Model
 const db=require("../db")
-
+const modelMovie=require("./category")
+const UnionTable=require("./UnionTable")
 
 const category = db.define('category', {
     // attributes
@@ -15,9 +16,10 @@ const category = db.define('category', {
       require: true,
       unique: true,
       validate:{
-        is: ["^[a-z]+$",'i'],
+        notEmpty: true
       }
-    }
+    },
+    
 })
 
 category.insertDefaultcategory=async () =>{ 

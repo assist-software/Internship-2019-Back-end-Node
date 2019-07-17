@@ -4,18 +4,13 @@ var passport=require("passport")
 var bodyParser= require("body-parser")
 const uuid4=require("uuid/v4")
 const nodemailer=require("nodemailer")
-const modelUser=require("./../models/user")
+const modelUser=require("../models/user")
 
-
-route.get('/',(req,res)=>{
-
-    res.send("Hello world")
-})
-
+/**Route for sign-up */
 route.post('/signup', function(req,res,next){
     
     passport.authenticate('signup', function(err, user, info) {
-        //res.send(req.body)
+        
         if(err){
             res.status(500).send(info.message)
         }
@@ -29,12 +24,12 @@ route.post('/signup', function(req,res,next){
     })(req,res,next)
 })
 
-
+/**Route for sign-in */
 route.post('/signin',function(req,res,next){
 
     passport.authenticate('signin',function(err,user,info){
         if(err){
-            //console.log(err)
+            
             res.status(500).send(info.message)
         }
         else{ 
@@ -47,12 +42,16 @@ route.post('/signin',function(req,res,next){
     })(req,res,next)
 })
 
+/**Route for reset password */
 route.post('/reset-password',function(req,res){
-   email=req.body.email
+    email=req.body.email
+    
+    /**Using uuid for generating a new password */
+    const newpass=uuid4()
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-   const newpass=uuid4()
-   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-   var transporter = nodemailer.createTransport({
+    /** Creating the transporter for email */
+    var transporter = nodemailer.createTransport({
     host: 'debugmail.io',
     port: 25,
     secure: false,
@@ -63,15 +62,16 @@ route.post('/reset-password',function(req,res){
       pass: 'c1e147c0-a672-11e9-a92a-153f6747ec08'
     }
   });
+
+
     var mailOptions = {
         from: 'croitorgheorghi@yahoo.com', // sender address
         to: email, // list of receivers
-        subject: 'Hello', // Subject line
+        subject: 'Hello', // subject line
         text: 'Hello ! This is the new password: '+newpass, // plain text body
     };
    
-    //res.send(newpass)
-
+    /** Send mail and if the acction is successfully update the data base with the new password */
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.log(error);
@@ -86,6 +86,7 @@ route.post('/reset-password',function(req,res){
 
 })
 
+ /**Route for profile ( secure route-> only authenticated user can acces) */
  route.post('/profile',(req,res,next)=>{ 
    passport.authenticate("jwt",{session: false},(err,user,info)=>{
 

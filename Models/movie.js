@@ -1,12 +1,15 @@
 const Sequelize = require('sequelize');
 const Model=Sequelize.Model
 const db=require("../db")
+const modelCategory=require("./category")
+const UnionTable=require("./UnionTable")
 
 const movie=db.define('movie',{
 
   id:{
       type: Sequelize.INTEGER,
-      autoIncrement: true
+      autoIncrement: true,
+      primaryKey:true
   },
   title:{
       type: Sequelize.STRING,
@@ -25,7 +28,7 @@ const movie=db.define('movie',{
       type: Sequelize.STRING,
       require:true,
       validate:{
-          isUrl: true
+         isUrl: true
       }
   },
 
@@ -43,7 +46,7 @@ const movie=db.define('movie',{
   },
 
   imbdScore:{
-     type: Sequelize.NUMBER 
+     type: Sequelize.INTEGER 
   },
 
   description:{
@@ -51,10 +54,11 @@ const movie=db.define('movie',{
   },
   
   releaseDate:{
-      type: Sequelize.DATE
+      type: Sequelize.DATE,
+      require:true
   }
-
-
 })
+
+
 
 module.exports=movie

@@ -1,11 +1,11 @@
 const Sequelize = require('sequelize');
 const Model=Sequelize.Model
 const db=require("../db")
-const modelUser=require("../models/user")
+const modelUser=require("./user")
 
 
 const role = db.define('role', {
-    // attributes
+    
     id:{
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -25,7 +25,6 @@ const role = db.define('role', {
       type: Sequelize.BOOLEAN,
       default: false,
       require: true
-      // allowNull defaults to true
     }
 })
 

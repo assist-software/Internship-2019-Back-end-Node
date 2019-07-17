@@ -2,8 +2,8 @@ const passport=require("passport")
 var localStrategy=require("passport-local").Strategy
 const bcrypt=require("bcrypt")
 const jwt=require("jsonwebtoken")
-const modelUser=require("./../models/user")
-const modelRole=require("./../models/role")
+const modelUser=require("../models/user")
+const modelRole=require("../models/role")
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJWT=require("passport-jwt").ExtractJwt
 
@@ -11,47 +11,39 @@ passport.serializeUser(function(user, done) {
     done(null, user.id);
   });
 
-
-
 passport.use('signup',new localStrategy({
 
     usernameField: 'email',
     passwordField: 'password',
     passReqToCallback: true
-},function(req, email, password, done) {
-    var email=req.body.email
-    var password1=req.body.password
-    var confPassword1=req.body.confPassword
-    var username=req.body.username
+  },function(req, email, password, done) {
+        var email=req.body.email
+        var password1=req.body.password
+        var confPassword1=req.body.confPassword
+        var username=req.body.username
     
     
-    if(!email || !username || !password || !confPassword1){
-      return done(null,false,{message: "All the field must be filled"})
-    }
-    else
-     {if(password!==confPassword1){
-         return done(null,false,{message: "Password must be the same"})
-     }
+        if(!email || !username || !password || !confPassword1){
+          return done(null,false,{message: "All the field must be filled"})}
+        else{
+          if(password!==confPassword1){
+         return done(null,false,{message: "Password must be the same"})}
        
-     else{
-        console.log(modelUser)
-        modelUser.findOne({where: {'email': req.body.email}})
+          else{
+             modelUser.findOne({where: {'email': req.body.email}})
                       .then((users)=>{
                             console.log(users)
                             if(users!==null)
-                                {console.log("User is in database")
                                 done(null,false,{message: "User is already in database"})
-                                 }
-                            else
-                            {
-                                console.log(username,password1,confPassword1,"Aici esti")
+                            else{
                                 modelUser.create({'name':req.body.username, 'email': req.body.email ,'passwordHash':req.body.password,'roleId': 2})
-                                    .then((user)=>{return done(null,user.email,{message: "User created successfully"})})
-                                    .catch((error) => {return done(error,false,{message: "Error somewere"})})
-                            }
+                                         .then((user)=>{return done(null,user.email,{message: "User created successfully"})})
+                                         .catch((error) => {return done(error,false,{message: "Error somewere"})})}
                                 }) 
-     }}
-    })  )           
+              } 
+            }
+    }
+  ))           
  
     
     passport.use('signin',new localStrategy({
@@ -62,14 +54,13 @@ passport.use('signup',new localStrategy({
     },function(req,username,password,done){
       
         modelUser.findOne({where:{'email': req.body.email}})
-            .then((users)=>{ //console.log(users)
-                if(users===null)
-                  done(null,false,{message: "User was not found"})
-                else
-                  {
-                    bcrypt.compare(req.body.password,users.passwordHash,(err,match)=>{
-                      
-                          if(match){ 
+                 .then((users)=>{ 
+                     if(users===null)
+                        done(null,false,{message: "User was not found"})
+                     else{
+                        bcrypt.compare(req.body.password,users.passwordHash,(err,match)=>{
+                          if(match){
+
                           var pay=users.toJSON()
                           var user_payload={
                             username: pay.name,
@@ -91,12 +82,10 @@ passport.use('signup',new localStrategy({
                         else
                          return done(null,false,{message:"Password does not match"})
 
-                      })
-                      
-                        
+                      })   
                     }
                   })
-                .catch((error) => {return done(error,false,{message: "Error somewere"})})
+                  .catch((error) => {return done(error,false,{message: "Error from server"})})
             }))
             
      /* Middleware for passport-jwt for secure routes */      
@@ -110,12 +99,13 @@ passport.use('signup',new localStrategy({
             modelUser.findOne({where:{email: jwt_payload.email}})
                      .then((users)=>{
                           if(users){
-                              console.log(users)
+                              
                               var info_token={
                               name: users.name,
-                              email: users.email
+                              email: users.email,
+                              role: users.roleId
                             }
-                          
+                           
                            done(null,info_token)
                           }
                           else{

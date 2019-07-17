@@ -3,10 +3,9 @@ const Model=Sequelize.Model
 const model=require("./role")
 const bcrypt=require("bcrypt")
 const db=require("../db")
-const modelRole=require("../models/role")
+const modelRole=require("./role")
 
 const user = db.define('user', {
-    // attributes
     id:{
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -32,14 +31,6 @@ const user = db.define('user', {
       require: true
       
     },
-
-    /*instanceMethods:{
-
-        validPassword:function(password){
-            return bcrypt.compare(password,this.password)
-        }
-    
-    }*/
 })
 
 
@@ -69,22 +60,6 @@ user.beforeCreate((user) => {
         
 });
 
-//user.comparePass
-
-// sequelize.sync().then(() =>{ 
-//     return  user.findAll()
-//         .then(users=>{ console.log(typeof(users))
-//             if(isEmptyObject(users)){
-//                 console.log("Database is empty and we need to create a default user")
-//                 user.create({name: 'Admin', email: 'admin@yahoo.com',passwordHash: 'admin'})
-//                     .then(()=>console.log("Admin created successfully"))
-                
-//         }
-//     })
-// })
-
-// user.hasOne(model,{foreignKey: 'id'})
-
 user.insertDefaultUser=async () =>{ 
     const allusers=await user.findAll()
     if(allusers.length==0)
@@ -93,5 +68,4 @@ user.insertDefaultUser=async () =>{
               console.log("Database is empty and we need to create a default user")
       }
     }
-//modelRole.belongsTo(user,{foreignKey: 'userId'})
 module.exports=user
