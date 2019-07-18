@@ -11,7 +11,7 @@ passport.serializeUser(function(user, done) {
     done(null, user.id);
   });
 
-passport.use('signup',new localStrategy({
+  passport.use('signup',new localStrategy({
 
     usernameField: 'email',
     passwordField: 'password',
@@ -32,7 +32,6 @@ passport.use('signup',new localStrategy({
           else{
              modelUser.findOne({where: {'email': req.body.email}})
                       .then((users)=>{
-                            console.log(users)
                             if(users!==null)
                                 done(null,false,{message: "User is already in database"})
                             else{
@@ -43,9 +42,9 @@ passport.use('signup',new localStrategy({
               } 
             }
     }
-  ))           
- 
-    
+  ))  
+  
+  
     passport.use('signin',new localStrategy({
        
         usernameField: 'email',

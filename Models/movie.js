@@ -20,7 +20,7 @@ const movie=db.define('movie',{
       type: Sequelize.STRING,
       require:true,
       validate:{
-          isUrl:true
+         isUrl:true
       }
   },
 
@@ -45,8 +45,8 @@ const movie=db.define('movie',{
       require:true
   },
 
-  imbdScore:{
-     type: Sequelize.INTEGER 
+  imdbScore:{
+     type: Sequelize.FLOAT
   },
 
   description:{

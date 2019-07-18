@@ -5,7 +5,7 @@ const modelMovie=require("./category")
 const UnionTable=require("./UnionTable")
 
 const category = db.define('category', {
-    // attributes
+    
     id:{
         type: Sequelize.INTEGER,
         autoIncrement: true,

@@ -40,6 +40,4 @@ role.insertDefaultRoles=async () =>{
       }
 }
 
-//role.hasOne(modelUser,{foreignKey: 'userId',})
-//role.belongsTo(modelUser, { foreignKey: 'userId' })
 module.exports=role

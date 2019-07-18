@@ -11,8 +11,8 @@ route.post('/signup', function(req,res,next){
     
     passport.authenticate('signup', function(err, user, info) {
         
-        if(err){
-            res.status(500).send(info.message)
+        if(err!=null){
+            res.status(500).send("Error")
         }
         else{ 
         if(!user){
@@ -23,7 +23,6 @@ route.post('/signup', function(req,res,next){
         }}
     })(req,res,next)
 })
-
 /**Route for sign-in */
 route.post('/signin',function(req,res,next){
 
@@ -77,9 +76,18 @@ route.post('/reset-password',function(req,res){
             console.log(error);
             res.status(400).send({success: false})
         } else {
-            let update_value={passwordHash: newpass}
-            modelUser.update(update_value,{where: {'email': req.body.email}})
-                     .then(()=>res.status(200).send({success: true}))
+            modelUser.findOne({where:{email: req.body.email}})
+                     .then((user)=>{
+                         if(!user){
+                            res.status(404).send({success: false, message: "The user is not in database"})
+                         }
+                         else{
+                            let update_value={passwordHash: newpass}
+                            modelUser.update(update_value,{where: {'email': req.body.email}})
+                                     .then(()=>res.status(200).send({success: true}))
+                         }
+                     })
+            
             
         }
     });
@@ -90,7 +98,7 @@ route.post('/reset-password',function(req,res){
  route.post('/profile',(req,res,next)=>{ 
    passport.authenticate("jwt",{session: false},(err,user,info)=>{
 
-     console.log(err,user,info)
+     
      if(err){
          res.status(409).send("There is a problem")
      }
