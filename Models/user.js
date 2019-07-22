@@ -64,7 +64,7 @@ user.insertDefaultUser=async () =>{
     const allusers=await user.findAll()
     if(allusers.length==0)
       {
-              await user.create({name: 'Admin', email: 'admin@yahoo.com',passwordHash: 'admin',roleId: 1})
+              await user.create({name: 'Admin', email: 'admin@yahoo.com',passwordHash: 'Admin123.',roleId: 1})
               console.log("Database is empty and we need to create a default user")
       }
     }

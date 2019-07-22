@@ -23,7 +23,7 @@ app.use(cors())
 
 //Routes
 app.use("/",routes)
-app.use("/api",passport.authenticate("jwt",{session:false}),protectedRoutes)
+app.use("/api",/*passport.authenticate("jwt",{session:false}),*/protectedRoutes)
 
 
 // Creating relationship one: one

@@ -54,9 +54,26 @@ const movie=db.define('movie',{
   },
   
   releaseDate:{
-      type: Sequelize.DATE,
+      type: Sequelize.BIGINT,
       require:true
+  },
+
+  duration:{
+      type:Sequelize.STRING
+  },
+
+  director:{
+      type:Sequelize.STRING
+  },
+  
+  writers:{
+      type:Sequelize.STRING
+  },
+
+  stars:{
+      type:Sequelize.STRING
   }
+
 })
 
 
