@@ -15,7 +15,8 @@ const user = db.define('user', {
       type: Sequelize.STRING,
       validate:{
         
-        is: ["^[a-z]+$",'i'],
+        //is: ["^[a-z]+$",'i'],
+        notEmpty: true
       }
     },
     email:{

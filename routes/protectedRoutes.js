@@ -39,6 +39,7 @@ route.post("/movie",passport.authenticate("jwt",{session:false}),async(req,res)=
 
     else{
       category=req.body.category.split(",")
+      console.log(category)
       // Search for a movie with the same imdbId
       var movies=await modelMovie.findOne({where:{imdbId: imdbId}})
           if(movies)
@@ -46,18 +47,27 @@ route.post("/movie",passport.authenticate("jwt",{session:false}),async(req,res)=
           else {
           //Create the new movie
              try{
-               var movie= await modelMovie.create({title: title,trailerUrl: trailerUrl,originalSourceUrl:originalSourceUrl,
-                                                        coverUrl:coverUrl, imdbId: imdbId,imdbScore:imdbScore,description:description,
-                                                        releaseDate:releaseDate,duration: duration,director:director,writers: writers,stars:stars  })
-                    
-               //Creating the relationship between the movie and category ind insert in table 
+               
               for(let i=0;i<category.length;i++){
-                  const categ=await modelCategory.findOne({where: {name: category[i]}})
-                  if(!categ)
-                      res.status(400).send({mesagge:"Category was not found"})
-                  else
-                      await UnionTable.create({categoryId: categ.id,movieId: movie.id})       
-                    } 
+                const categ=await modelCategory.findOne({where: {name: category[i]}})
+                if(!categ)
+                    res.status(400).send({mesagge:"Category was not found"})}
+
+              
+              var movie= await modelMovie.create({title: title,trailerUrl: trailerUrl,originalSourceUrl:originalSourceUrl,
+                                                  coverUrl:coverUrl, imdbId: imdbId,imdbScore:imdbScore,description:description,
+                                                  releaseDate:releaseDate,duration: duration,director:director,writers: writers,stars:stars  })
+              
+              for(let i=0;i<category.length;i++){
+                const categ=await modelCategory.findOne({where: {name: category[i]}})
+                if(!categ)
+                          res.status(400).send({mesagge:"Category was not found"})
+                else
+                 await UnionTable.create({categoryId: categ.id,movieId: movie.id})       
+
+              }                    
+               //Creating the relationship between the movie and category ind insert in table 
+              
 
                     res.status(201).send({movie, id: movie.id})
                   }catch(err){
@@ -72,7 +82,7 @@ route.post("/movie",passport.authenticate("jwt",{session:false}),async(req,res)=
 
   route.post('/category',passport.authenticate("jwt",{session:false}),async function(req,res){ 
     
-
+    var name=req.body.name
     if(req.user.role===2)
       res.send({message: "Just admin can acces this page"})
     else{
@@ -80,8 +90,8 @@ route.post("/movie",passport.authenticate("jwt",{session:false}),async(req,res)=
       res.send({message: "The fild must be filled"})
       else{
       var category_name= await modelCategory.findOne({where: {'name': req.body.name}})
-          if(category_name!==null)
-            res.status(200).send({message:"The category already is in database",name: category.name,id: category.id})
+          if(category_name!=null)
+            res.status(200).send({message:"The category already is in database",name: category_name.name,id: category_name.id})
           else{ 
               var category=await modelCategory.create({'name':req.body.name})
               if(category!=null)

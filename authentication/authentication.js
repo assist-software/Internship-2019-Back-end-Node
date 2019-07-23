@@ -34,11 +34,16 @@ passport.serializeUser(function(user, done) {
                 if(users!==null)
                   done(null,false,{message: "User is already in database"})
                 else{
-                   var user= modelUser.create({'name':req.body.username, 'email': req.body.email ,'passwordHash':req.body.password,'roleId': 2})
+                  try{
+                   var user= await modelUser.create({'name':req.body.username, 'email': req.body.email ,'passwordHash':req.body.password,'roleId': 2})
                       if(user)
                         return done(null,user.email,{message: "User created successfully"}) 
                       else
                         return done(null,user.email,{message: "Error somewere"})
+                  }catch(error){
+                    console.log(error)
+                    done(error,false)
+                  }
                       
                     } 
                 }

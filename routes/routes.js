@@ -22,8 +22,9 @@ route.post('/signup', function(req,res,next){
     
     passport.authenticate('signup', function(err, user, info) {
         
+        
         if(err!=null){
-            res.status(500).send("Error")
+            res.status(500).send({message: "Error",err: err})
         }
         else{ 
         if(!user){
@@ -38,9 +39,9 @@ route.post('/signup', function(req,res,next){
 route.post('/signin',function(req,res,next){
 
     passport.authenticate('signin',function(err,user,info){
-        if(err){
+        if(err!=null){
             
-            res.status(500).send(info)
+            res.status(500).send({message: "Error"})
         }
         else{ 
         if(!user){
@@ -171,6 +172,31 @@ route.get('/api/category',async(req,res)=>{
       }
    return mmov
   }
+ 
+
+  route.get("/api/movie/query",async(req,res)=>{
+
+    
+    var from=parseInt(req.query.from)
+    
+    //var date_from=new Date(from)
+    //var date_to=new Date(to)
+    
+    var movies=await modelMovie.findAll({where: {releaseDate: from }})
+    
+    if(movies[0]!==undefined){
+      
+      var movie_vector=[]
+      for(var i=0;i<movies.length;i++){
+         movie=await cauta_categ(movies[i])
+         movie_vector.push(movie)
+          }
+         res.send(movie_vector)
+      }
+     else
+       res.send({message: "Empty"})
+     }
+    )
 
  route.get("/api/movie/query",async(req,res)=>{
 
@@ -236,7 +262,6 @@ route.get('/api/movies-category/:id',async(req,res)=>{
   var movies=[]
   for(var i=0;i<id_movie.count;i++){
   var movie=await modelMovie.findOne({where:{id:id_movie.rows[i].movieId}})
-  console.log(movie)
   movies.push(movie)
   }
 
