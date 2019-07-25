@@ -32,18 +32,18 @@ route.post("/movie",passport.authenticate("jwt",{session:false}),async(req,res)=
     var writers=req.body.writers
     var stars=req.body.stars
     //The folowing fild's can't be empty
-    if(!title || !trailerUrl || !originalSourceUrl || !coverUrl || !imdbId || !releaseDate || !category)
+    console.log(!title,trailerUrl , originalSourceUrl , coverUrl , imdbId , releaseDate , category)
+    if(!title|| !trailerUrl || !originalSourceUrl || !coverUrl || !imdbId || !releaseDate || !category)
      res.send({message: "There are some fild witch must be filled"})
     
     
 
     else{
       category=req.body.category.split(",")
-      console.log(category)
       // Search for a movie with the same imdbId
       var movies=await modelMovie.findOne({where:{imdbId: imdbId}})
-          if(movies)
-            res.send({message: "The movies is already in database",movies})
+          if(movies){ 
+            res.send({message: "The movies is already in database",movies})}
           else {
           //Create the new movie
              try{
@@ -69,7 +69,7 @@ route.post("/movie",passport.authenticate("jwt",{session:false}),async(req,res)=
                //Creating the relationship between the movie and category ind insert in table 
               
 
-                    res.status(201).send({movie, id: movie.id})
+                    res.status(201).send({message: "ok",movie, id: movie.id})
                   }catch(err){
                     console.log(err.errors)
                     res.json(err.errors)
@@ -139,9 +139,9 @@ route.post("/movie",passport.authenticate("jwt",{session:false}),async(req,res)=
    })                     
 
   
-   /** This route is used to delet a movie*/
+   /** This route is used to delete a movie*/
    route.delete("/movie/:id",passport.authenticate("jwt",{session:false}),async(req,res)=>{
-    /**Can be accesed just by admin */
+    /**Can be accesed by admin */
     
     if(req.user.role==2){
       res.send({message: "Just admin can acces this page"})
@@ -164,6 +164,30 @@ route.post("/movie",passport.authenticate("jwt",{session:false}),async(req,res)=
    }
    )
 
+  
+   route.delete("/category/:id",passport.authenticate("jwt",{session:false}),async(req,res)=>{
+    /**Can be accesed by admin */
+    
+    if(req.user.role==2){
+      res.send({message: "Just admin can acces this page"})
+    }
+   else{
+     var id=req.params.id
+
+     // Find the movie with the id from url
+     var categ=await modelCategory.findOne({where:{id: id}})
+      if(!categ)
+         res.status(404).send({message: "the category is not in database"})
+      else{
+          var destr=await modelCategory.destroy({where:{id:id}})
+          var destrUnion=await UnionTable.destroy({where:{categoryId:id}})
+          if(destr===1)
+                  res.status(200).send({mesagge: "The category has been deleted"})
+            
+      }
+      }  
+   }
+   )
   
 
 module.exports=route

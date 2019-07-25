@@ -71,7 +71,7 @@ passport.serializeUser(function(user, done) {
                 email: pay.email,
                 role: pay.roleId
                         }
-                var token=jwt.sign(user_payload,"Mysecretcode",{algorithm: 'HS256',expiresIn: '2h'})
+                var token=jwt.sign(user_payload,"Mysecretcode",{algorithm: 'HS256',expiresIn: '2d'})
                 jwt.verify(token,"Mysecretcode",(err,good)=>{
                                if(good && !err){ 
                                 var info= {

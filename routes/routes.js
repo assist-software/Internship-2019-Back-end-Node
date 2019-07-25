@@ -54,7 +54,7 @@ route.post('/signin',function(req,res,next){
 })
 
 /**Route for reset password */
-route.post('/reset-password',function(req,res){
+route.post('/reset-password',async function(req,res){
     email=req.body.email
     
     /**Using uuid for generating a new password */
@@ -63,6 +63,8 @@ route.post('/reset-password',function(req,res){
 
     /** Creating the transporter for email */
     var transporter = nodemailer.createTransport({
+    
+    //service: 'gmail',
     host: 'debugmail.io',
     port: 25,
     secure: false,
@@ -70,6 +72,7 @@ route.post('/reset-password',function(req,res){
 
     auth: {
       user: 'croitorgheorghita@gmail.com',
+      //pass: "",
       pass: 'c1e147c0-a672-11e9-a92a-153f6747ec08'
     }
   });
@@ -83,28 +86,34 @@ route.post('/reset-password',function(req,res){
         text: 'Hello ! This is the new password: '+newpass, // plain text body
     };
    
+    
     /** Send mail and if the acction is successfully update the data base with the new password */
-    transporter.sendMail(mailOptions, async(error, info) => {
-        if (error) {
-            console.log(error);
-            res.status(400).send({success: false})
-        } else {
-           var user=await modelUser.findOne({where:{email: req.body.email}})
+    var user=await modelUser.findOne({where:{email: req.body.email}})
               if(!user)
                 res.status(404).send({success: false, message: "The user is not in database"})       
               else{
                 let update_value={passwordHash: newpass}
                 var update=await modelUser.update(update_value,{where: {'email': req.body.email}})
-                   if(update==1)
+              }
+
+    transporter.sendMail(mailOptions, async(error, info) => {
+        if (error) {
+            console.log(error);
+            res.status(400).send({success: false})
+        } else {
+              var user=await modelUser.findOne({where:{email: req.body.email}})
+              if(!user)
+                res.status(404).send({success: false, message: "The user is not in database"})       
+              else
                    res.status(200).send({success: true})
-                         }       
+                              
         }
     });
 
 })
 
  /**Route for profile ( secure route-> only authenticated user can acces) */
- route.post('/profile',(req,res,next)=>{ 
+ route.get('/profile',(req,res,next)=>{ 
    passport.authenticate("jwt",{session: false},(err,user,info)=>{
 
      
@@ -198,6 +207,27 @@ route.get('/api/category',async(req,res)=>{
      }
     )
 
+    route.get('/api/category-count',async(req,res)=>{
+      var categories=await modelCategory.findAndCountAll({attributes: ['id','name']})
+      var category=[]
+      
+      for(var i=0;i<categories.count;i++){
+        var movies=await UnionTable.findAndCountAll({where: {categoryId: categories.rows[i].id}})
+        var category_object={
+          id: categories.rows[i].id,
+          name: categories.rows[i].name,
+          //...categories.rows[i],
+          count: movies.count
+        }
+  
+        category.push(category_object)
+      }
+      if(categories!==null)
+          res.status(200).send(category)
+      else
+          res.status(404).send("Categories not found")
+    
+    })
  route.get("/api/movie/query",async(req,res)=>{
 
     var limit=req.query.limit
